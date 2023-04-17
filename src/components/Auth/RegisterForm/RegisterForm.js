@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { View } from 'react-native'
 import { Input, Icon, Button } from '@rneui/themed';
 import { useFormik } from "formik";
@@ -6,6 +6,8 @@ import { initialValues, validationSchema } from './RegisterForm.data';
 import { styles } from './RegisterForm.styles';
 
 export function RegisterForm() {
+    const [showPassword, setShowPassword] = useState(false)
+
     const formik = useFormik({
         initialValues: initialValues(),
         validationSchema:validationSchema(),
@@ -15,6 +17,8 @@ export function RegisterForm() {
             console.log(formValue);
         }
     });
+
+    const showHidenPassword = () => setShowPassword((prevState) => !prevState);
 
     return (
         <View style={styles.content}>
@@ -34,12 +38,13 @@ export function RegisterForm() {
             <Input 
                 placeholder='Contraseña'
                 containerStyle={styles.input}
-                secureTextEntry={true}
+                secureTextEntry={ showPassword ? false : true }
                 rightIcon={
                     <Icon 
                         type='material-community'
-                        name="eye-outline"
+                        name={ showPassword ? "eye-off-outline" : "eye-outline" }
                         iconStyle={styles.icon}
+                        onPress={showHidenPassword}
                     />
                 }
                 onChangeText={text => formik.setFieldValue("password", text)}
@@ -48,12 +53,13 @@ export function RegisterForm() {
             <Input 
                 placeholder='Repetir contraseña'
                 containerStyle={styles.input}
-                secureTextEntry={true}
+                secureTextEntry={ showPassword ? false : true }
                 rightIcon={
                     <Icon 
                         type='material-community'
-                        name="eye-outline"
+                        name={ showPassword ? "eye-off-outline" : "eye-outline" }
                         iconStyle={styles.icon}
+                        onPress={ showHidenPassword }
                     />
                 }
                 onChangeText={text => formik.setFieldValue("repeatPassword", text)}
