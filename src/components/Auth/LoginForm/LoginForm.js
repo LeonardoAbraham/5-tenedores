@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
 import { Input, Icon, Button } from "@rneui/themed";
 import { useFormik } from 'formik';
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import Toast from 'react-native-toast-message';
+import { useNavigation } from '@react-navigation/native';
+import { screen } from "../../../utils";
 import { initialValues, validationSchema } from "./LoginForm.data";
 import { styles } from './LoginForm.styles';
 
@@ -9,6 +13,7 @@ import { styles } from './LoginForm.styles';
 export function LoginForm() {
 
     const [showPassword, setShowPassword] = useState(false);
+    const navigation = useNavigation();
 
     const onShowHidePassword = () => setShowPassword((prevState) => !prevState)
 
@@ -16,8 +21,22 @@ export function LoginForm() {
         initialValues: initialValues(),
         validationSchema: validationSchema(),
         validateOnChange: false,
-        onSubmit: (formValue) => {
-            console.log(formValue);
+        onSubmit: async (formValue) => {
+            try {
+                const auth = getAuth();
+                await signInWithEmailAndPassword(
+                    auth,
+                    formValue.email,
+                    formValue.password
+                );
+                navigation.navigate(screen.account.account);
+            } catch (error) {
+                Toast.show({
+                    type:"error",
+                    position:"bottom",
+                    text1:"Usuario o contraseña incorrectos"
+                })
+            }
         }
     })
 
